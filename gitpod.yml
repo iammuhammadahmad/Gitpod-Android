@@ -1,0 +1,47 @@
+image:
+  file: .gitpod.Dockerfile
+
+tasks:
+
+  - name: Use Node 16
+    command: nvm use v16
+  - name: Install and Run Android Emulator (optional)
+    command: |
+      if [ -d "$ANDROID_SDK_ROOT/emulator" ]; then
+        echo "Starting Android Emulator..."
+        $ANDROID_SDK_ROOT/emulator/emulator @Pixel_3a_API_30_x86 -no-snapshot-load -no-audio -no-boot-anim -accel on &
+      else
+        echo "Android Emulator is not set up."
+      fi
+  
+  - name: Install Dependencies
+    command: |
+      npm install
+      
+  - name: Build Android
+    command: |
+      npm run build:android &
+      sleep 5
+
+  - name: Start application
+    command: |
+      npm rund android &
+      sleep 5
+
+vscode:
+  extensions:
+    - msjsdiag.vscode-react-native
+    - ms-vscode.cpptools
+
+ports:
+  - port: 8081
+    onOpen: open-browser
+    description: Metro Bundler
+
+  - port: 19000
+    onOpen: open-browser
+    description: React Native Expo (optional if using Expo)
+
+# Variables and paths for the Android SDK and other tools
+env:
+  REACT_NATIVE_PACKAGER_HOSTNAME: 0.0.0.0
